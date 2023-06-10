@@ -19,7 +19,7 @@ public:
         int y = findRep(v);
         if (x != y)
         {
-            parents[u] = v;
+            parents[x] = y;
             return true;
         }
         return false;
