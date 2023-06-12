@@ -1,67 +1,61 @@
 #include <bits/stdc++.h>
-#define int long long
-#define endl "\n"
-
 using namespace std;
-
-const int mod = 1e9 + 7;
-int m, n;
-vector<string> v;
-int vis[1001][1001];
-int newx[4] = {-1, 1, 0, 0};
-int newy[4] = {0, 0, 1, -1};
-int c = 0;
-bool valid(int i, int j)
+bool operator<(pair<int, int> a, pair<int, int> b)
 {
-    if (vis[i][j] == 1)
-        return false;
-    if (i >= 0 and i < n and j >= 0 and j < m)
-        return true;
-    return false;
+    return a.second > b.second;
 }
-void dfs(int i, int j)
+bool operator>(pair<int, int> a, pair<int, int> b)
 {
-    c++;
-    vis[i][j] = 1;
-    for (int k = 0; k < 4; k++)
-    {
-        int tx = i + newx[k];
-        int ty = j + newy[k];
+    return a.second < b.second;
+}
+class Prims
+{
+    map<int, vector<pair<int, int>>> adj; // u->v,w;
+    map<int, int> visited;
 
-        if (valid(tx, ty) and v[tx][ty] == '.' and v[tx][ty] != '#')
-        {
-            dfs(tx, ty);
-        }
+public:
+    void addEdges(int u, int v, int w)
+    {
+        adj[u].push_back({v, w});
+        adj[v].push_back({u, w});
     }
-}
-int32_t main()
-{
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    int t;
-    cin >> t;
-    while (t--)
+    vector<int> prims(int src)
     {
-        v.clear();
-        memset(vis, 0, sizeof(vis));
-        c = 0;
-        cin >> m >> n;
-        for (int i = 0; i < n; i++)
+        priority_queue<pair<int, int>> pq;
+        pq.push({src, 0});
+        vector<int> ans;
+        while (!pq.empty())
         {
-            string str;
-            cin >> str;
-            v.push_back(str);
-        }
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < m; j++)
+            pair<int, int> Top = pq.top();
+            pq.pop();
+            if (visited[Top.first])
+                continue;
+            visited[Top.first] = 1;
+            ans.push_back(Top.first);
+            for (auto i : adj[Top.first])
             {
-                if (vis[i][j] == 0 and v[i][j] == '@')
-                {
-                    dfs(i, j);
-                }
+                if (!visited[i.first])
+                    pq.push({i.first, i.second});
             }
         }
-        cout << c << endl;
+        return ans;
     }
+};
+int main()
+{
+    Prims p;
+    int edges;
+    cin >> edges;
+    while (edges--)
+    {
+        int u, v, w;
+        cin >> u >> v >> w;
+        p.addEdges(u, v, w);
+    }
+    vector<int> ans = p.prims(1);
+    for (auto i : ans)
+    {
+        cout << i << " ";
+    }
+    cout << endl;
 }

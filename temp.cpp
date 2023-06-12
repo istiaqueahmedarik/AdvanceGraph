@@ -1,61 +1,58 @@
 #include <bits/stdc++.h>
 using namespace std;
+
 class Krushkal
 {
-    vector<pair<int, pair<int, int>>> edges;
-    int parent[100];
+    multimap<int, pair<int, int>> m;
+    map<int, int> parent;
 
 public:
-    void addEdge(int u, int v, int w)
+    void addEdges(int u, int v, int w)
     {
-        edges.push_back({w, {u, v}});
+        m.insert({w, {u, v}});
         parent[u] = u;
         parent[v] = v;
     }
-    // int findRep(int x)
-    // {
-    //     if (x == parent[x])
-    //         return x;
-    //     return findRep(parent[x]);
-    // }
-    int findRep(int x) { return x == parent[x] ? x : parent[x] = findRep(parent[x]); }
-    bool Uninon(int u, int v)
+    int findRep(int u) { return parent[u] == u ? u : parent[u] = findRep(parent[u]); }
+    bool Union(int u, int v)
     {
-        if (findRep(u) != findRep(v))
+        int x = findRep(u);
+        int y = findRep(v);
+        if (x != y)
         {
-            parent[u] = v;
+            parent[x] = y;
             return true;
         }
         return false;
     }
-    vector<pair<int, pair<int, int>>> paths()
+    vector<pair<int, int>> kruskal()
     {
-        vector<pair<int, pair<int, int>>> ans;
-        sort(edges.begin(), edges.end());
-        for (int i = 0; i < edges.size(); i++)
+        vector<pair<int, int>> ans;
+        for (auto i : m)
         {
-            if (Uninon(edges[i].second.first, edges[i].second.second))
+            if (Union(i.second.first, i.second.second))
             {
-                ans.push_back(edges[i]);
+                ans.push_back({i.second.first, i.second.second});
             }
         }
         return ans;
     }
 };
+
 int main()
 {
+    Krushkal k;
     int edges;
     cin >> edges;
-    Krushkal k;
     for (int i = 0; i < edges; i++)
     {
-        int u, v, w;
-        cin >> u >> v >> w;
-        k.addEdge(u, v, w);
+        int a, b, c;
+        cin >> a >> b >> c;
+        k.addEdges(a, b, c);
     }
-    vector<pair<int, pair<int, int>>> ans = k.paths();
-    for (int i = 0; i < ans.size(); i++)
+    vector<pair<int, int>> ans = k.kruskal();
+    for (auto i : ans)
     {
-        cout << ans[i].second.first << " " << ans[i].second.second << " " << ans[i].first << endl;
+        cout << i.first << " " << i.second << endl;
     }
 }
